@@ -60,5 +60,6 @@ namespace CountriesApp.Controllers
             var obj = countryService.Remove(Id);
             return Json(obj, JsonRequestBehavior.AllowGet);
         }
+
     }
 }
