@@ -1,0 +1,19 @@
+﻿<tr ng-repeat="country in countries">
+    <td>
+        {{country.Name}}
+    </td>
+    <td>
+        {{country.Code}}
+    </td>
+    <td>
+        {{country.Abrev}}
+    </td>
+    <td>
+        <a href="#" title="Edit" ng-click="EditCountry(country)">
+            <i class="glyphicon glyphicon-edit"></i>
+        </a>
+        <a href="#" title="Delete" ng-click="DeleteCountry(country)">
+            <i class="glyphicon glyphicon-trash"></i>
+        </a>
+    </td>
+</tr>

@@ -1,0 +1,33 @@
+﻿@{
+    ViewBag.Title = "List Country";
+}
+@model IEnumerable<CountriesApp.Models.Country>
+
+
+<div class="row">
+
+
+    <header>
+        <h1 class="page-title">Sections</h1>
+    </header>
+    <p>
+
+       <a href="#" class="btn btn-primary" id="btnCreate">Create</a>
+    </p>
+    <!-- Table -->
+    <table id="tblCountry" class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Code</th>
+                <th>Abrev</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="lstCountry">            
+            @Html.Partial("_List", Model)
+        </tbody>
+    </table>
+
+</div>
+<div class="modal fade" id="modalArea" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" />

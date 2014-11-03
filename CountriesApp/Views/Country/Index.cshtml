@@ -1,0 +1,60 @@
+﻿@{
+    ViewBag.Title = "List Country";
+}
+
+<div class="row">
+    <header>
+        <h1 class="page-title">Sections</h1>
+    </header>
+    <p>
+
+        <a href="#" class="btn btn-primary" id="btnCreate">Create</a>
+    </p>
+    <!-- Table -->
+    <table id="tblCountry" class="table table-striped" paging-table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Code</th>
+                <th>Abrev</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="lstCountry" ng-controller="countryController">
+            @Html.Partial("_List")
+        </tbody>
+    </table>
+
+</div>
+<script>
+
+    $(document).ready(function () {
+        //$('#tblCountry').dataTable();
+        App.init();
+
+        var oTable = $('#tblCountry').dataTable({
+            "aLengthMenu": [
+                [5, 15, 20, -1],
+                [5, 15, 20, "All"] // change per page values here
+            ],
+            // set the initial value
+            "iDisplayLength": 5,
+
+            "sPaginationType": "bootstrap",
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records",
+                "oPaginate": {
+                    "sPrevious": "Prev",
+                    "sNext": "Next"
+                }
+            },
+            "aoColumnDefs": [{
+                'bSortable': false,
+                'aTargets': [0]
+            }
+            ]
+        });
+
+    });
+
+</script>
