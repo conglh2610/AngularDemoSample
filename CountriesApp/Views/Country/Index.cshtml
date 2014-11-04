@@ -2,13 +2,13 @@
     ViewBag.Title = "List Country";
 }
 
-<div class="row">
+<div class="row" ng-controller="countryController">
     <header>
         <h1 class="page-title">Sections</h1>
     </header>
     <p>
 
-        <a href="#" class="btn btn-primary" id="btnCreate">Create</a>
+        <a href="#" class="btn btn-primary" ng-click="EditCountry()">Create</a>
     </p>
     <!-- Table -->
     <table id="tblCountry" class="table table-striped" paging-table>
@@ -20,7 +20,7 @@
                 <th></th>
             </tr>
         </thead>
-        <tbody id="lstCountry" ng-controller="countryController">
+        <tbody id="lstCountry" >
             @Html.Partial("_List")
         </tbody>
     </table>

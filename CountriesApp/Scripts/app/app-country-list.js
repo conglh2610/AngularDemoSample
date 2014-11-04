@@ -96,10 +96,11 @@
 
         //edit list membership package
         this.saveCountry = function (country) {
+            var url = typeof country.Id === 'undefined' ? '/Country/Create' : '/Country/Edit';
             var qdefer = $q.defer();
             $http({
                 method: 'Post',
-                url: '/Country/Edit',
+                url: url,
                 data: { country: country },
                 async: false,
             }).success(function (data, status, headers, config) {
@@ -111,33 +112,67 @@
 
             return qdefer.promise;
         };
+
+        // delete country
+        this.deleteCountry = function (country) {
+            if (typeof country.Id === 'undefined')
+                return;
+            var qdefer = $q.defer();
+            $http({
+                method: 'Post',
+                url: '/Country/Delete',
+                data: { Id: country.Id },
+                async: false
+            }).success(function (data, status, headers, config) {
+                qdefer.resolve(data);
+            }).error(function (data, status, headers, config) {
+                alert('error!');
+            })
+            return qdefer.promise;
+        }
     });
 
 
     app.controller('countryController', function ($scope, CountryService, $modal) {
 
+
         $scope.countries = CountryService.getCountries();
-        $scope.EditCountry = function (country, $index) {
+        $scope.EditCountry = function (country) {
             var modalInstance = $modal.open({
                 templateUrl: 'Partials/editpopup.html',
                 controller: 'ModalCountry',
-                scope : $scope,
+                scope: $scope,
                 resolve: {
                     country: function () {
                         return angular.copy(country);
                     }
                 }
+            }).result.then(function(response){
+                CountryService.getCountries().then(function (response) {
+                    $scope.countries = response;
+                });
             });
-
         };
+
+        $scope.DeleteCountry = function (country) {
+            CountryService.deleteCountry(country).then(function () {
+                $.each($scope.countries, function (i) {
+                    if ($scope.countries[i].Id == country.Id)
+                        $scope.countries.splice(i, 1);
+                })
+            }, function (response) {
+                alert(response);
+            });
+        }
     });
 
     app.controller('ModalCountry', function ($scope, $modalInstance, country, CountryService) {
         $scope.selectedCountry = country;
-        $scope.save = function (country) {           
-            CountryService.saveCountry(country);
-            $modalInstance.dismiss('cancel');
-            $scope.countries = CountryService.getCountries();
+        $scope.save = function (country) {
+            CountryService.saveCountry(country).then(function () {
+                $modalInstance.close();
+            });
+          
         };
 
         $scope.cancel = function () {

@@ -20,7 +20,6 @@ namespace CountriesApp.Controllers
         // GET: /Country/
         public ActionResult Index()
         {
-            //var lst = countryService.Get();
             return View();
         }
 
@@ -33,11 +32,6 @@ namespace CountriesApp.Controllers
         public JsonResult Get(Guid Id)
         {
             return Json(countryService.Get(Id), JsonRequestBehavior.AllowGet);
-        }
-
-        public ActionResult Create()
-        {
-            return PartialView("_Create");
         }
 
         [HttpPost]
