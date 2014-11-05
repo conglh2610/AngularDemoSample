@@ -73,15 +73,15 @@
         var country = new Object();
 
         //get list membership package
-        this.getCountries = function (Id) {
-            var url = typeof Id === 'undefined' ? '/Country/GetList' : '/Country/Get/';
+        this.getCountries = function (Id, page, pageSize) {
+            var url = Id == 0 ? '/Country/GetListPaging' : '/Country/Get/';
             //var method = typeof Id === 'undefined' ? 'Get' : 'Post';
             var qdefer = $q.defer();
 
             $http({
                 method: 'Post',
                 url: url,
-                data: { Id: Id },
+                data: { Id: Id, page: page, pageSize: pageSize },
                 async: false,
             }).success(function (data, status, headers, config) {
                 qdefer.resolve(data);
@@ -92,7 +92,6 @@
 
             return qdefer.promise;
         };
-
 
         //edit list membership package
         this.saveCountry = function (country) {
@@ -132,11 +131,47 @@
         }
     });
 
-
+    // country controller
     app.controller('countryController', function ($scope, CountryService, $modal) {
 
+        $scope.sort = {
+            column: 'Name',
+            descending: false
+        };
 
-        $scope.countries = CountryService.getCountries();
+        $scope.selectedCls = function (column) {
+            return column == $scope.sort.column && 'sort-' + $scope.sort.descending;
+        };
+
+        $scope.sorting = function (column) {
+            var sort = $scope.sort;
+            if ($scope.sort.column == column) {
+                $scope.sort.descending = !sort.descending;
+            } else {
+                $scope.sort.column = column;
+                $scope.sort.descending = false;
+            }
+        };
+
+        $scope.headers = ["Name","Code","Abrev"];
+             
+        $scope.isSearching = false;
+        $scope.page = 0;
+        $scope.pagesCount = 0;
+
+        var _onSuccess = function (value) {
+            $scope.countries = value.Items;
+            $scope.page = value.Page;
+            $scope.pagesCount = value.TotalPages;
+            $scope.Data = value;
+            $scope.isSearching = false;
+        };
+        var _onError = function () {
+            $scope.isSearching = false;
+        };
+
+        $scope.countries = CountryService.getCountries(0, 1, 10).then(_onSuccess, _onError);
+
         $scope.EditCountry = function (country) {
             var modalInstance = $modal.open({
                 templateUrl: 'Partials/editpopup.html',
@@ -147,10 +182,8 @@
                         return angular.copy(country);
                     }
                 }
-            }).result.then(function(response){
-                CountryService.getCountries().then(function (response) {
-                    $scope.countries = response;
-                });
+            }).result.then(function (response) {
+                CountryService.getCountries(0, 1, 10).then(_onSuccess, _onError);
             });
         };
 
@@ -163,22 +196,55 @@
             }, function (response) {
                 alert(response);
             });
+        };
+        $scope.search = function (page) {
+            page = page || 0;
+            CountryService.getCountries(0, page, 10).then(_onSuccess, _onError);
         }
+        $scope.search();
     });
-
+    // Modal dialog create/edit
     app.controller('ModalCountry', function ($scope, $modalInstance, country, CountryService) {
         $scope.selectedCountry = country;
         $scope.save = function (country) {
             CountryService.saveCountry(country).then(function () {
                 $modalInstance.close();
             });
-          
+
         };
 
         $scope.cancel = function () {
             $modalInstance.dismiss('cancel');
         };
     });
+
+    // Paging directive
+    /*************************************************************************/
+    // DIRECTIVES
+
+    app.directive('demoPager', function () {
+        return {
+            restrict: 'E',
+            templateUrl: 'Templates/pager-template.html',
+            controller: ['$scope', function ($scope) {
+                $scope.range = function () {
+                    var step = 2;
+                    var doubleStep = step * 2;
+                    var start = Math.max(0, $scope.page - step);
+                    var end = start + 1 + doubleStep;
+                    if (end > $scope.pagesCount) { end = $scope.pagesCount; }
+
+                    var ret = [];
+                    for (var i = start; i != end; ++i) {
+                        ret.push(i);
+                    }
+
+                    return ret;
+                };
+            }]
+        }
+    });
+
 
 })();
 

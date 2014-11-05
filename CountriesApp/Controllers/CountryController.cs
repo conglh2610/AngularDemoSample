@@ -28,6 +28,11 @@ namespace CountriesApp.Controllers
             return Json(countryService.Get(), JsonRequestBehavior.AllowGet);
         }
 
+        public JsonResult GetListPaging(int? page, int? pageSize)
+        {
+           var result = countryService.Get(page, pageSize);
+           return Json(result, JsonRequestBehavior.AllowGet);
+        }
         
         public JsonResult Get(Guid Id)
         {

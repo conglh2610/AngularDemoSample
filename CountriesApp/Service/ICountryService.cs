@@ -10,6 +10,9 @@ namespace CountriesApp.Service
     public interface ICountryService
     {
         IList<Country> Get();
+
+        PagedCollection<Country> Get(int? page, int? pageSize);
+
         Country Get(Guid Id);
 
         Country Add(Country agent);

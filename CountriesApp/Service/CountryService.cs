@@ -21,6 +21,25 @@ namespace CountriesApp.Service
             return countryRepository.Get.ToList();
         }
 
+        public PagedCollection<Country> Get(int? page, int? pageSize)
+        {
+            var currPage = page.GetValueOrDefault(0);
+            var currPageSize = pageSize.GetValueOrDefault(10);
+
+            var paged = countryRepository.Get.ToList().Skip(currPage * currPageSize)
+                                .Take(currPageSize)
+                                .ToArray();
+
+            var totalCount = countryRepository.Get.Count();
+            return new PagedCollection<Country>()
+            {
+                Page = currPage,
+                TotalCount = totalCount,
+                TotalPages = (int)Math.Ceiling((decimal)totalCount / currPageSize),
+                Items = paged
+            };
+        }
+
         public Country Get(Guid Id)
         {
             return countryRepository.Get.FirstOrDefault(t => t.Id.Equals(Id));

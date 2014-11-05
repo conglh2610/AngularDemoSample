@@ -14,9 +14,7 @@
     <table id="tblCountry" class="table table-striped" paging-table>
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Code</th>
-                <th>Abrev</th>
+                <th ng-repeat="header in headers" ng-click="sorting(header)" ng-class="selectedCls(header)" >{{header}}</th>
                 <th></th>
             </tr>
         </thead>
@@ -24,6 +22,9 @@
             @Html.Partial("_List")
         </tbody>
     </table>
+    <div class="text-center">
+        <demo-pager is-searching="isSearching" page="page" pages-count="pagesCount"></demo-pager>
+    </div>
 
 </div>
 <script>
