@@ -21,12 +21,26 @@ namespace CountriesApp.Service
             return countryRepository.Get.ToList();
         }
 
-        public PagedCollection<Country> Get(int? page, int? pageSize)
+        public static string GetReflectedPropertyValue( object subject, string field)
+        {
+            object reflectedValue = subject.GetType().GetProperty(field).GetValue(subject, null);
+            return reflectedValue != null ? reflectedValue.ToString() : "";
+        }
+
+        public PagedCollection<Country> Get(int? page, int? pageSize, string column, bool isDesc)
         {
             var currPage = page.GetValueOrDefault(0);
             var currPageSize = pageSize.GetValueOrDefault(10);
 
-            var paged = countryRepository.Get.ToList().Skip(currPage * currPageSize)
+            var paged = isDesc ? countryRepository.Get.ToList()
+                                .OrderBy(r => GetReflectedPropertyValue(r, column))
+                                .Skip(currPage * currPageSize)
+                                .Take(currPageSize)
+                                .ToArray()
+
+                               : countryRepository.Get.ToList()
+                                .OrderByDescending(r => GetReflectedPropertyValue(r, column))
+                                .Skip(currPage * currPageSize)
                                 .Take(currPageSize)
                                 .ToArray();
 
@@ -36,7 +50,7 @@ namespace CountriesApp.Service
                 Page = currPage,
                 TotalCount = totalCount,
                 TotalPages = (int)Math.Ceiling((decimal)totalCount / currPageSize),
-                Items = paged
+                Items =  paged
             };
         }
 

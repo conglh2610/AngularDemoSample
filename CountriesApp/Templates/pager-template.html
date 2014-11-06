@@ -1,12 +1,12 @@
-﻿<div ng-hide="(isSearching || pagesCount < 2)">
+﻿<div ng-hide="(sort.isSearching || sort.pagesCount < 2)">
     <ul class="pagination">
-        <li><a href="#" ng-hide="page == 0" ng-click="search(0)"><<</a></li>
-        <li><a href="#" ng-hide="page == 0" ng-click="search(page-1)"><</a></li>
-        <li ng-repeat="n in range()" ng-class="{active: n == page}">
-            <a href="#" ng-click="search(n)" ng-if="n != page">{{n+1}}</a>
-            <!--<span ng-if="n == page">{{n+1}}</span>-->
+        <li><a href="#" ng-hide="sort.page == 0" ng-click="search(0)"><<</a></li>
+        <li><a href="#" ng-hide="sort.page == 0" ng-click="search(sort.page-1)"><</a></li>
+        <li ng-repeat="n in range()" ng-class="{active: n == sort.page}">
+            <a href="#" ng-click="search(n)" ng-show="n != sort.page">{{n+1}}</a>
+            <span ng-show="n == sort.page">{{n+1}}</span>
         </li>
-        <li><a href="#" ng-hide="page == pagesCount - 1" ng-click="search(page+1)">></a></li>
-        <li><a href="#" ng-hide="page == pagesCount - 1" ng-click="search(pagesCount - 1)">>></a></li>
+        <li><a href="#" ng-hide="sort.page == sort.pagesCount - 1" ng-click="search(sort.page+1)">></a></li>
+        <li><a href="#" ng-hide="sort.page == sort.pagesCount - 1" ng-click="search(sort.pagesCount - 1)">>></a></li>
     </ul>
 </div>

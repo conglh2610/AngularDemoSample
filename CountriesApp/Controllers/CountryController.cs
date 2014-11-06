@@ -28,9 +28,9 @@ namespace CountriesApp.Controllers
             return Json(countryService.Get(), JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult GetListPaging(int? page, int? pageSize)
+        public JsonResult GetListPaging(int? page, int? pageSize, string column, bool isDesc)
         {
-           var result = countryService.Get(page, pageSize);
+            var result = countryService.Get(page, pageSize, column, isDesc);
            return Json(result, JsonRequestBehavior.AllowGet);
         }
         

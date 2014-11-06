@@ -14,7 +14,7 @@
     <table id="tblCountry" class="table table-striped" paging-table>
         <thead>
             <tr>
-                <th ng-repeat="header in headers" ng-click="sorting(header)" ng-class="selectedCls(header)" >{{header}}</th>
+                <th ng-repeat="header in headers" ng-class="selectedCls(header)" ng-click="SortChange(header)" >{{header}}</th>
                 <th></th>
             </tr>
         </thead>

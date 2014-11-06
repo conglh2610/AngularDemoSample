@@ -73,7 +73,7 @@
         var country = new Object();
 
         //get list membership package
-        this.getCountries = function (Id, page, pageSize) {
+        this.getCountries = function (Id, page, pageSize, column, isDesc) {
             var url = Id == 0 ? '/Country/GetListPaging' : '/Country/Get/';
             //var method = typeof Id === 'undefined' ? 'Get' : 'Post';
             var qdefer = $q.defer();
@@ -81,7 +81,7 @@
             $http({
                 method: 'Post',
                 url: url,
-                data: { Id: Id, page: page, pageSize: pageSize },
+                data: { Id: Id, page: page, pageSize: pageSize, column: column, isDesc: isDesc },
                 async: false,
             }).success(function (data, status, headers, config) {
                 qdefer.resolve(data);
@@ -134,43 +134,51 @@
     // country controller
     app.controller('countryController', function ($scope, CountryService, $modal) {
 
+        //$scope.isSearching = false;
+        //$scope.page = 0;
+        //$scope.pagesCount = 0;
+
         $scope.sort = {
             column: 'Name',
-            descending: false
+            descending: false,
+            pageSize: 5,
+            isSearching: false,
+            page: 0,
+            pagesCount : 0
         };
 
         $scope.selectedCls = function (column) {
             return column == $scope.sort.column && 'sort-' + $scope.sort.descending;
         };
 
-        $scope.sorting = function (column) {
+        $scope.SortChange = function (column) {
             var sort = $scope.sort;
+
             if ($scope.sort.column == column) {
                 $scope.sort.descending = !sort.descending;
-            } else {
+            }
+            else {
                 $scope.sort.column = column;
                 $scope.sort.descending = false;
             }
-        };
 
-        $scope.headers = ["Name","Code","Abrev"];
-             
-        $scope.isSearching = false;
-        $scope.page = 0;
-        $scope.pagesCount = 0;
+            CountryService.getCountries(0, $scope.sort.page , $scope.sort.pageSize, $scope.sort.column, $scope.sort.descending).then(_onSuccess, _onError);
+        }
+
+        $scope.headers = ["Name", "Code", "Abrev"];
 
         var _onSuccess = function (value) {
             $scope.countries = value.Items;
-            $scope.page = value.Page;
-            $scope.pagesCount = value.TotalPages;
+            $scope.sort.page = value.Page;
+            $scope.sort.pagesCount = value.TotalPages;
             $scope.Data = value;
-            $scope.isSearching = false;
+            $scope.sort.isSearching = false;
         };
         var _onError = function () {
-            $scope.isSearching = false;
+            $scope.sort.isSearching = false;
         };
 
-        $scope.countries = CountryService.getCountries(0, 1, 10).then(_onSuccess, _onError);
+        //$scope.countries = CountryService.getCountries(0, 1, $scope.sort.pageSize, $scope.sort.column, $scope.sort.descending).then(_onSuccess, _onError);
 
         $scope.EditCountry = function (country) {
             var modalInstance = $modal.open({
@@ -183,7 +191,7 @@
                     }
                 }
             }).result.then(function (response) {
-                CountryService.getCountries(0, 1, 10).then(_onSuccess, _onError);
+                CountryService.getCountries(0, $scope.sort.pageSize, $scope.sort.pageSize, $scope.sort.column, $scope.sort.descending).then(_onSuccess, _onError);
             });
         };
 
@@ -198,8 +206,8 @@
             });
         };
         $scope.search = function (page) {
-            page = page || 0;
-            CountryService.getCountries(0, page, 10).then(_onSuccess, _onError);
+            $scope.sort.page = page || 0;
+            CountryService.getCountries(0, $scope.sort.page, $scope.sort.pageSize, $scope.sort.column, $scope.sort.descending).then(_onSuccess, _onError);
         }
         $scope.search();
     });
@@ -230,9 +238,9 @@
                 $scope.range = function () {
                     var step = 2;
                     var doubleStep = step * 2;
-                    var start = Math.max(0, $scope.page - step);
+                    var start = Math.max(0, $scope.sort.page - step);
                     var end = start + 1 + doubleStep;
-                    if (end > $scope.pagesCount) { end = $scope.pagesCount; }
+                    if (end > $scope.sort.pagesCount) { end = $scope.sort.pagesCount; }
 
                     var ret = [];
                     for (var i = start; i != end; ++i) {
@@ -244,7 +252,6 @@
             }]
         }
     });
-
 
 })();
 

@@ -11,7 +11,7 @@ namespace CountriesApp.Service
     {
         IList<Country> Get();
 
-        PagedCollection<Country> Get(int? page, int? pageSize);
+        PagedCollection<Country> Get(int? page, int? pageSize, string column, bool isDesc);
 
         Country Get(Guid Id);
 
